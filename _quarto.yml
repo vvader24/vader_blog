@@ -3,7 +3,7 @@ project:
 
 website:
   title: "Vinita Vader"
-  favicon: "picture_vader.jpg"
+  favicon: "profile.jpg"
   page-footer:
     center: |
       [Contact Vinita Vader](mailto:vinitavader@gmail.com)
