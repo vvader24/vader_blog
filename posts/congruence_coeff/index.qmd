@@ -1,0 +1,603 @@
+---
+title: "Comparisons across data types for High dimensionality models using Congruence coefficients"
+author: "Vinita Vader"
+date: "2023-02-19"
+categories: [Rcpp, code, tutorial, CCA]
+image: CCA_plot.jpeg
+toc: true
+toccolor: PineGreen
+toc-title: Outline
+bibliography: https://api.citedrive.com/bib/341998cf-9ae8-43cc-93ff-60f22dac5c38/references.bib?x=eyJpZCI6ICIzNDE5OThjZi05YWU4LTQzY2MtOTNmZi02MGYyMmRhYzVjMzgiLCAidXNlciI6ICIyNzAzIiwgInNpZ25hdHVyZSI6ICIyMjhjNTI5NTU3MGVmMDFiNDM0ZDhlYThiNTZiZDViZjE2M2M5ZGFiZTU5NmVlZTRlNTAxZmRjNzRjNGYxYjNlIn0=/bibliography.bib
+format:
+  html:
+    html-math-method: katex
+    self-contained: true
+    code-link: true
+    code-tools: true
+    code-block-border-left: "#DDE1E4"
+execute:
+  warning: false
+---
+
+# Background
+
+The Big Five, HEXACO and Big 2 models are some of the most commonly used personality models utilized for predicting life outcomes such as well-being, mortality, life-satisfaction, achievement, workplace performance as well as prognosis for conditions such as diabetes, cancer and depression. However, there is a growing consensus with respect to the inadequacy of these models in explaining individual variation within and between groups. The populations on which these models were founded are geographically concentrated in the Western hemisphere, questioning their utility in non-Western parts of the world. The total amount of variation captured by these models is usually around one-third of the total variation in the data. They fail to capture cultural nuances that might be crucial to some of the economic, political and policy related outcomes in a society.
+
+A high dimensionality approach addresses these concerns by extracting a higher number of factors and testing their performance across multiple robustness checks. One of the tests involves comparing factor solutions across two sets of data surveyed from different geographical locations (for e.g., California vs. Florida), self-reported demographics such as race, ethnicity (for e.g., blacks vs. Caucasians or Thai vs. South African) or any other predetermined differentiation or experimental conditions as set out by the researchers (for e.g., self vs known other as target of description). Tucker's congruence coefficient is a commonly used tool for assessing similarity between factors across solutions . [@lovik2020].
+
+Congruence coefficient is an index of factor similarity across solutions. Let us take an example using the Big 5 measure of personality (Extraversion, Conscientiousness, Neuroticsim, Agreeableness and Openness (Intellect)). wherein you have data on this measure from USA ( *sample 1* ) and China( *sample 2* ). You obtain a five-factor solution across these samples. A researcher might be interested in knowing how well do these factor solutions match. In other words, the researcher is interested in the extent to which the five factor solution obtained from the USA sample is similar to that obtained from the Chinese sample.
+
+{Write about why investigating factor similarity is important- WEIRD bias, cultural similarities and specificities, inhibiting researchers from making biased assumptions about homogeneity across populations.}
+
+If we consider $x_i$ as the factor loading of an item (for e.g., "I am a worrier")$i$ on factor $x$ (for e.g., "Neuroticism") in *sample 1* (for e.g., USA sample) and $y_i$ as the factor loading of an item (for e.g., "I am a worrier") $i$ on factor $y$ in *sample 2* (for e.g., Chinese sample), the congruence coefficient between these two factors can be computed using the following formula.
+
+$$
+{\phi(x,y)} = \frac{\Sigma x_i y_i}{\sqrt{\Sigma x_i^2 y_i^2}}
+$$
+
+In mathematical terms, congruence coefficient is the cosine of the angle between two vectors $x$ and $y$. Figure C in the plots below indicates highest level of congruence between factors $x$ and $y$, whereas Figure B, shows the least. Perfect congruence between $x$ and $y$ ($\theta$ = 0), is a low probability occurrence in personality research. However, smaller $\theta$ values are strong indications of factor congruence.
+
+```{r}
+#| warning: false
+#Libraries 
+library(tidyverse)
+library(ggforce)
+library(stringr)
+library(forstringr)
+library(kableExtra)
+```
+
+```{r cosine-plots}
+#| code-fold: true
+#| warning: false
+
+angle <- function(p, c){
+  M <- p - c
+  Arg(complex(real = M[1], imaginary = M[2]))
+}
+make_plot <- function(data){
+
+data %>% 
+  ggplot(aes(x, y, group = line)) +
+    geom_path(aes(color=factor(line)),arrow = arrow(length=unit(0.40,"cm"))) + 
+    #geom_arc(aes(x0 = 1, y0 = 1, r = 1, start = angle(P1, O), end = angle(P2, O)), linewidth = .5, inherit.aes = FALSE)+
+    #geom_curve(aes(x = x1, y = y1, xend = x2, yend = y2, colour = "curve")+
+  coord_fixed()+
+    annotate(geom = "text", x = (P1[1] +.3), y = (P1[2] +.2), size = 4.5, label = "x", color = "#7b6d8d", fontface = 'italic')+ #P1
+     annotate(geom = "text", x = (P2[1] +.3), y = (P2[2] +.2), size = 4.5, label = "y", color = "#e77f73", fontface = 'italic') + #P2
+     annotate(geom = "text", x = 2, y = 2, size = 5, label = paste("theta"), parse = TRUE)+ 
+  guides(color="none")+
+  scale_colour_manual(values = c("#e77f73", "#7b6d8d"))+
+    theme_minimal()+
+    theme(axis.text.x=element_blank(),
+          axis.title.x=element_blank(),
+          axis.text.y=element_blank(),
+          axis.title.y=element_blank())
+}
+
+
+ #Plot 1
+O <- c(1,1)
+P1 <- c(3,5)
+P2 <- c(5,3)
+
+df <- tibble(
+  line = c("A", "A", "B", "B"),
+  x = c(1, 5, 1, 3),
+  y = c(1, 3, 1, 5)
+)
+
+p1 <- make_plot(df)
+
+ #Plot 2
+O <- c(1,1)
+P1 <- c(1.7,5)
+P2 <- c(5,1.7)
+
+df <- tibble(
+  line = c("A", "A", "B", "B"),
+  x = c(1, 5, 1, 1.7),
+  y = c(1, 1.7, 1, 5)
+)
+
+p2 <- make_plot(df)
+
+
+ #Plot 3
+O <- c(1,1)
+P1 <- c(4,5)
+P2 <- c(5,4)
+
+df <- tibble(
+  line = c("A", "A", "B", "B"),
+  x = c(1, 5, 1, 4),
+  y = c(1, 4, 1, 5)
+)
+
+p3 <- make_plot(df)
+
+
+library(patchwork)
+wrap_plots(p1,p2,p3)+
+  plot_annotation(tag_levels = c('A', '1'))
+```
+
+Personality science has moved towards focusing on high dimensionality structures (those consisting of at least \>8 factors) that have greater advantages than the low dimensionality models (those consisting of \<8 factors). These advantages include unearthing culture-specific factors, building a comprehensive understanding of personality and models that account for higher amount of variance in the data. There are also unique issues with respect to computational rigor in data analysis and management that need to be dealt with as we build these high dimensional structures.
+
+Rest of this article focuses on carrying out congruence coefficient analysis on personality data based on the HEXACO model [@ashton2007] consisting of six dimensions/factors: *Honesty-Humility* (H), *Emotionality* (E), *Extraversion* (X), *Agreeableness* (A), *Conscientiousness* (C), and *Openness to Experience* (O). This data was obtained from the [Open-Source Psychometric Project](http://openpsychometrics.org/_rawdata/) website. This is a cross-country dataset and has an advantage over data collected on [Amazon Mechanical Turk](https://www.mturk.com/) (AMT) with invalid responding that at a rate lesser than 25% as compared to AMT data.
+
+# Data description
+
+## Exploring the dataset
+
+Let's take a closer look at the dataset before we delve into the analysis.
+
+```{r}
+unclean_data <- rio::import(here::here("posts", "congruence_coeff", "HEXACO", "data.csv"), setclass = "tbl_df") %>% 
+   rio::characterize() %>% 
+  janitor::clean_names()%>% 
+  select(country, starts_with(c("h_", "e_", "x_", "a_", "c_", "o_")))
+```
+
+## HEXACO measure
+
+```{r}
+#| code-fold: true
+#| warning: false
+
+item_count <- unclean_data %>% 
+  dplyr::select(-country) %>% 
+  names() %>% 
+  as_tibble_col(column_name = "item_names") %>% 
+  mutate(dims = factor(str_left(item_names,1), 
+                       levels = c("h", "e", "x", "a", "c", "o")),
+         item_no = parse_number(item_names)) %>% 
+  group_by(dims) %>%
+  count(dims, sort=FALSE, name = "Items") %>% 
+  ungroup() %>% 
+  mutate(Dimensions = c("Honesty-Humility(H)", 
+                        "Emotionality(E)", 
+                       "Extraversion(X)", 
+                       "Agreeableness (A)", 
+                       "Conscientiousness (C)", 
+                       "Openness to Experience (O)")) %>% 
+  dplyr::select(Dimensions, Items)
+```
+
+There are `r item_count %>% distinct(Items)` items for every dimension, leading to a total number of `r item_count %>% distinct(Items)*6` items in the data. Below is the list of items used in this analysis.
+
+```{r HEXACO-scale}
+#| code-fold: true
+#| warning: false
+
+unclean_scale <- rio::import(here::here("posts", "congruence_coeff", "HEXACO", "scale.xlsx"), setclass = "tbl_df") %>% 
+   rio::characterize() %>% 
+  janitor::clean_names() 
+
+all_subscales <- c(
+  #H
+  "Sincerity", "Fairness", "Greed Avoidance", "Modesty",   
+  #E
+  "Fearfulness", "Anxiety", "Dependence", "Sentimentality",
+  #X
+  "Social Self-Esteem", "Social Boldness", "Sociability", "Liveliness", 
+  #A
+  "Forgivingness", "Gentleness", "Flexibility", "Patience",
+  #C
+  "Organization", "Diligence", "Perfectionism", "Prudence", 
+  #O
+  "AesA_Aesthetic Appreciation", "Inquisitiveness", "Creativity", "Unconventionality"
+  )
+get_subscale <- function(pattern){
+  str_subset(all_subscales, {{pattern}})
+}
+
+clean_scale <- unclean_scale %>% 
+  mutate(Dimension = factor(str_left(item_codes,1), 
+                       levels = c("H", "E", "X", "A", "C", "O")),
+         item_no = parse_number(item_codes),
+         Subscale = str_sub(item_codes, start =  2,end = 5)) %>% 
+  arrange(Dimension, item_no) %>% 
+  mutate(Dimension = fct_recode(Dimension,
+                                "Honesty" = "H",
+                                "Emotionality" = "E",
+                                "Extraversion" = "X",
+                                "Agreeableness" = "A",                                              "Conscientiousness" = "C",
+                                "Openness to expereince" = "O"),
+         Subscale = map(Subscale,get_subscale) %>% unlist) %>% 
+  dplyr::select(item_no, Dimension, Subscale, items) %>% 
+  arrange(Dimension, Subscale) %>% 
+  rename("Item no" = "item_no", 
+         "Items" = "items") %>% 
+  mutate(Subscale = fct_recode(Subscale,
+                                "Aesthetic Appreciation" = "AesA_Aesthetic Appreciation" 
+  ))
+
+table_print <- function(dim_name)(
+ clean_scale %>% 
+  filter(Dimension == {{dim_name}}) %>% 
+  mutate("Item no" = 1:40) %>% 
+           dplyr::select(-Dimension) %>% 
+ kable() %>%
+  kable_styling(full_width = F) %>%
+  #collapse_rows(columns = 1:2, valign = "top") %>% 
+ scroll_box(width = "900px", height = "540px")
+)
+```
+
+::: panel-tabset
+### Honesty
+
+```{r}
+#| code-fold: true
+#| warning: false
+table_print("Honesty")
+```
+
+### Emotionality
+
+```{r}
+#| code-fold: true
+#| warning: false
+table_print("Emotionality")
+```
+
+### Extraversion
+
+```{r}
+#| code-fold: true
+#| warning: false
+table_print("Extraversion")
+```
+
+### Agreeableness
+
+```{r}
+#| code-fold: true
+#| warning: false
+table_print("Agreeableness")
+```
+
+### Conscientiousness
+
+```{r}
+#| code-fold: true
+#| warning: false
+table_print("Conscientiousness")
+```
+
+### Openness to expereince
+
+```{r}
+#| code-fold: true
+#| warning: false
+table_print("Openness to expereince")
+```
+:::
+
+
+
+
+## Final data {#finaldata}
+
+```{r}
+#| code-fold: true
+#| warning: false
+
+cntry_df <- unclean_data %>% 
+  count(country, sort = TRUE) %>% 
+  head(8)
+
+cntry_df %>% 
+  kable(col.names = c("Country code","Sample size(n)"), align=rep('c', 2)) %>% 
+  kable_styling(position = "center")
+```
+
+For the current project we will demonstrate the computation of congruence coefficients for personality structures of samples from Phillipines (PH) and Germany (DE). These countries in the data have have comparable sizes and can be viewed as culturally distinct from each other . \# Analysis We can start analyzing the data at this point. We will be using two `tibble`s representing the country samples in our data: `PH_data` and `DE_data`
+
+```{r}
+#| code-fold: true
+#| warning: false
+
+PH_data <- unclean_data %>% 
+  filter(country == "PH") %>%  #Phillipines data
+  dplyr::select(-country)
+DE_data <- unclean_data %>% 
+  filter(country == "DE") %>%  #Germany data
+  dplyr::select(-country)
+```
+
+
+::: panel-tabset
+### Phillipines data
+
+```{r}
+#| code-fold: true
+#| warning: false
+PH_data  %>% 
+  kable() %>% 
+  kable_styling(full_width = F) %>%
+ scroll_box(width = "900px", height = "550px")
+```
+
+### Germany data
+
+```{r}
+#| code-fold: true
+#| warning: false
+DE_data  %>% 
+  kable() %>% 
+  kable_styling(full_width = F) %>%
+ scroll_box(width = "900px", height = "550px")
+```
+:::
+
+# Analysis
+## Principal component analysis
+
+There are several decisions at this step that are important to consider in terms of process of deriving candidate models. Decisions about rotation type (for e.g., variamx, oblimin, equamax) and number of factors to be extracted are dependent on the type of data being used and the theoretical basis for the analysis. Typically, personality studies have focused on models that are varimax rotated models, mistakenly assuming that all factors in a personality scale should be independent of each other. A common assumption is also made about the number of factors being in the vicinity of the value five. Scree plots followed by parallel analysis have been utilized excessively in recent times for determining the optimum number of factors, given the data. 
+
+However, the exponential growth in data handling capacities of computers, have opened up the opportunity to venture into the higher dimensional models. We can test models with higher number of factors and assess greater amounts of data to replicate these models across varying demographics. With that, we need more sophisticated solutions to the optimum model problem. Functional programming and working extensively with lists are important ways in which data can be handled.
+
+This analysis mainly focuses on comparing solutions across samples from different countries. However, one could also use congruence coefficients for comparing solutions across rotation types (for e.g., varimax vs. oblimin) or data-types based on handling of the data(for e.g., raw vs. ipsatized) or based on a demographic variable (for e.g., male vs. female).
+
+I describe the code in detail at every step and provide suggestions to other potential scenarios, specifically referring to personality studies. 
+
+
+### List PCA solutions
+The `psych` package is a neat way of computing PCA in R. In high dimensionality studies one will often encounter scenarios wherein they want to compare multiple models with varying number of factors that are extracted. Make sure that the input data should consist only of `numeric` variables (See @finaldata). You can use the `dplyr::glimpse(data)` function to check if all the variables in the `tibble` or `dataframe` are `numeric`. I have built the function `run_pca` that takes country data as input and computes a varimax solution across different values of `nfactors` or number of factors extracted.
+
+```{r pca}
+library(psych)
+#Function for running PCA - retains loadings 
+
+run_pca <- function(no_comp, data_pca, country_code){
+  
+  pc_analysis <- principal({data_pca}, nfactors = {{no_comp}}, rotate = "varimax")
+  
+  pc_sorted<- fa.sort(pc_analysis)
+pc_loadings <-  unclass(loadings(pc_sorted))%>% 
+    as_tibble(rownames = "id") %>% 
+    dplyr::select(-id) %>% 
+    setNames(paste0({{country_code}},"_", 1:{{no_comp}} ))
+  
+pc_loadings
+}
+```
+
+
+The following code computes models that extract factors ranging from 2 to 25 and saves the loading matrix for each candidate model solution. The `map` function provides a list of all the matrices as output. 
+```{css, echo = FALSE}
+.output {
+max-height: 500px;
+overflow-y: scroll;
+}
+```
+
+#### Phillippines: PCA solutions
+```{r}
+#| class: output
+PH_loadings <- map(2:25, run_pca, data_pca = PH_data , country_code = "PH")
+PH_loadings
+```
+
+#### Germany: PCA solutions
+```{r}
+#| class: output
+DE_loadings <- map(2:25, run_pca, data_pca = DE_data, country_code = "DE" )
+DE_loadings 
+```
+
+## Congruence coefficient matrices
+These lists serve as inputs for congruence coefficient analysis. The function `factor.congruence` from the `psych` package provides a matrix indicating the extent of similarity between factors of both the solutions. 
+```{r}
+#| class: output
+
+#get congruence coefficient matrices for each candidate model with x = PH and y = DE
+congruence_mats <- map2(PH_loadings,DE_loadings, psych::factor.congruence)
+congruence_mats
+```
+
+## Maximum cost bipartite matching problem
+This is the most crucial step of this analysis. It involves identifying those unique non-overlapping values in each row and column that provide the highest average value for each matrix. This is the opposite of _Minimum cost bipartite matching problem_ (MCBM). Here is an example to illustrate the problem: 
+
+Assume that you run a matchmaking website and there are $N_f$ and $N_m$ who identify themselves as heterosexual. Each female is looking for a male partner and vice versa. You have a personality assessment of all participants enrolled on your website. Studies have demonstrated that partners differing on their levels of Extraversion could potentially lead to relationship dissatisfaction. A highly extraverted person may experience dissatisfaction with a introverted partner. In other words, there is some cost $C_{ij}$ for matching female _i_ with male _j_ on your website. The solution to this problem is finding a match for each participant with the least possible cost to any participant.  
+
+The problem can be stated as, given an $N_f$x$N_m$ cost matrix $C$, what is the optimal set of $m = min{N_f,N_m}$ matchings $(i,j)$, that minimizes the total cost of matchings $\Sigma_mC_{i,j}$. 
+
+In the case of the loading matrices, we want to obtain values that maximize the cost in $\Sigma_mC_{i,j}$ as we want values that represent the highest similarity between the solutions from Philippines and Germany. The `HungarianSolver` function from the `RcppHungarian` package in R solves the _Minimum cost bipartite matching problem_ using the Hungarian algorithm and can be modified to also solve the _Maximum cost bipartite matching problem_. It provides pairings of variables from the congruence coefficient matrics 
+
+```{r}
+#| class: output
+
+#get the optimum pairings using the Hungarian algorithm (aka the Huhn-Munkres algorithm). 
+pairings <- map(congruence_mats, ~RcppHungarian::HungarianSolver(-1*(abs(.x)))$pairs)
+pairings
+```
+
+The next set of functions involve data wrangling of the `pairings` output to obtain the final average values for each of the candidate model solutions.
+
+First, we build an `id` column that holds information about both the samples. 
+```{r}
+#1. Pairs
+ #Adds id columns to the 'pairs'; it strings together/concatenates the values from set x (PH) and set y (DE) to build an id col. 
+ add_id_pairs <- function(pair){
+   df <- pair %>% 
+     data.frame() %>% 
+     mutate(id = str_c(X1, "_",X2)) %>% 
+     rename( "PH" = "X1",
+            "DE" = "X2" )
+   df
+ }
+```
+
+```{r}
+#| class: output
+#1. Pairs
+ #All pairings with the required identifiers - id col that specifies the pairings for PH and DE, col names renamed 
+pairings_wID <- map(pairings, add_id_pairs)
+pairings_wID
+```
+
+Next, we can obtain the values for each other corresponding pairs identified in the previous step. In order to do this, the `melt` function from `reshape2` package aids in obtaining the long format of the matrices. 
+```{r}
+#| class: output
+ #All congruence coefficient matrices are melted where every row consists of a unique pair
+matLongs <- map(congruence_mats, ~reshape2::melt(.x, na.rm=TRUE, value.name="cc"))
+matLongs
+```
+
+The function below creates id's for all the variables in the matrices that can be matched with the pairs obtained by the Hungarian algorithm. 
+```{r}
+#2. Congruence coefficient matrices
+ #Adds id columns to the 'pairs'; it strings together the values from set x (PH) and set y (DE) to build an id col. 
+ add_id_matLong <- function(mat_long){
+retain_rows <- mat_long %>%
+  data.frame() %>% 
+  #extract digits after the 2nd underscore - there is only one underscore here, but this will work
+  mutate(id_PH = str_extract(Var1 , "[^_]*$"), 
+         id_DE = str_extract(Var2 , "[^_]*$"), 
+         id = paste0(id_PH, "_", id_DE)) %>% 
+  select(-id_PH, - id_DE)
+retain_rows
+ }
+```
+
+```{r}
+#| class: output
+#2. Congruence coefficient matrices
+ #Add the id col by retaining the congruence coefficient values for each row and col name in the congruence coefficient matrix. 
+matLongs_wID<- map(matLongs, add_id_matLong)
+matLongs_wID
+```
+
+Finally, we can join the two lists (pairings and desired cc values) using their id cols to retain only those pair values that result in an optimally high congruence coefficient as a combination of all rows*cols.  The obtained congruence coefficients maximize the overall average coefficient value for all combinations in each of the matrices. The `semi_join` function is the most efficient choice at the moment for this stage of the analysis. 
+```{r}
+#| class: output
+final_cc_list <- map2(matLongs_wID, pairings_wID, semi_join, by = "id")
+final_cc_list
+```
+
+## Average congruence coefficient
+The final step here is to compute the average congruence coefficient value for all the solutions. 
+
+```{r}
+#| warning: false
+#Function to compute congruence coefficients - average all values in the cc col
+compute_avg.cc <- function(model){
+  avg_cc <- model %>% 
+      summarise(avg_cc = mean(abs(cc)))
+  avg_cc 
+ }
+ 
+#Name all the four candidate models for clarity
+ names(final_cc_list) <- c(paste0(c(2:25), "-factor Model"))
+ 
+all_avg.cc_r <- map(final_cc_list,compute_avg.cc) %>% 
+               reshape2::melt() %>% 
+               select(-variable) %>% 
+               rename("Model" = "L1", 
+                      "Average_cc" = "value") %>% 
+               dplyr::select(Model, Average_cc) %>% 
+               mutate(Average_cc = round(Average_cc,3))
+```
+
+This table neatly displays all the candidate models with their respective Average Congruence coefficient values. 
+
+```{r}
+all_avg.cc_r %>% 
+  kable(col.names =c("Candidate Model", "Average Congruence coefficient"), align=rep('c', 2)) %>% 
+  kable_styling(full_width = F) %>%
+ scroll_box(width = "500px", height = "600px")
+```
+
+Visualizing the data above aids in identifying the most robust model(s).The most efficient way of doing this is the line graph. 
+## Visualization
+
+```{r avgCC-plot}
+all_avg.cc_r %>% 
+  mutate(Model = parse_number(Model)) %>% 
+  ggplot(aes(x = factor(Model), y = Average_cc, group = 1)) +
+  geom_line()+
+  labs(x = "Number of factors extracted",
+       y = "Average Congruence Coefficient values")+
+  theme_minimal()
+```
+The line plot above indicates that the 6-factor varimax rotated model performs the best across the Phillipino and German samples. It is followed by the 15-, 11- and 12- factor solutions. Based on Congruence coefficient analysis, one can conclude that the 6-factor structure is in line with the theoretical basis of the HEXCAO model of personality. 
+
+# Applying CCA to actual data
+It is critical that any user of this approach place the above results in context and understand the implications when applying Congruence coefficient analysis (CCA) to similar datasets. 
+
+The results above are based on a previously developed scale that has been replicated across contexts. The items in the measure have been refined and retained to corroborate the 6-factor structure. This is a common part of assessment development in Personality studies. It is therefore, not surprising to obtain these results further validating the 6-factor structure of the HEXACO model of personality. 
+
+Below, we take a look at the amount of variance explained by each of the candidate models considered in this project. 
+
+```{r}
+#| code-fold: true
+get_var <- function(data, pc_no){
+  pc_output <- principal(data, nfactors = pc_no, rotate = "varimax")
+  all_var <- pc_output$Vaccounted
+  all_var %>% 
+    as.data.frame() %>% 
+    rownames_to_column(var = "index") %>% 
+    filter(index == "Cumulative Var") %>% 
+    select_if(is.numeric) %>% 
+    unlist() %>% 
+    as.vector %>% 
+    max()
+}
+
+all_variances <- map(2:25, get_var, data = PH_data) %>% 
+  unlist %>% 
+  as_tibble()%>% 
+  rename("Eigenvalues" = "value") %>% 
+  mutate(Model = paste0(2:25, "-factor Model"),
+         Eigenvalues = round(Eigenvalues,3)) %>% 
+  dplyr::select(Model, Eigenvalues)
+
+all_indices_table <- left_join(all_avg.cc_r , all_variances) 
+```
+
+```{r cc-var-tab}
+#| code-fold: true
+all_indices_table %>% 
+  kable(col.names =c("Candidate Model", "Average Congruence coefficient", "Eigenvalues"), align=rep('c', 3)) %>% 
+  kable_styling(position = "center") %>%
+ scroll_box(width = "600px", height = "600px")
+```
+
+```{r cc-var-plot}
+#| code-fold: true
+#| fig-height: 8
+#| layout: "[0, 85]"
+all_indices_table%>% 
+  mutate(no_of_factors = parse_number(Model))%>%
+  dplyr::select(-Model) %>% 
+  reshape2::melt(., id.var='no_of_factors') %>% 
+  dplyr::rename(Indices = variable ) %>% 
+  ggplot(aes(x = factor(no_of_factors), 
+           y = value, group = Indices, 
+           linetype = Indices, 
+           fill = Indices))+
+  geom_line()+
+  scale_linetype_manual( values = c(1, 2), labels=c('Average Congruence coefficient', 'Eigenvalues')) +
+    scale_color_manual(values=c("black", "black"))+
+  labs(x = "Number of factors extracted",
+       y = "Average Congruence Coefficient values")+
+  theme_minimal()+
+  theme(legend.key.width = unit(0.51,"cm"),
+        legend.key.height=unit(0.38,"cm"),
+        legend.position = c(.21, 0.90),
+        text=element_text(family="Helvetica"),
+        legend.background = element_rect(fill = "grey94"))
+```
+
+The 6-factor solution manages to capture only about one-third of the variation in the data. It is necessary to consider higher dimensional structures that enable the discovery of complex psychological patterns in the samples under study. There could be potential for unearthing more culture specific aspects of individual differences in datasets that capture individual differences in personality, attitudes, preferences or values. The low amount of variance explained by low dimensional models is indicative of information in the data that is left out. 
+
+# Conclusion
+In order to assess robustness of a model derived from Principal component analysis, it is necessary to consider the similarity between structures across different conditions as one of the indices. This can be done using Congruence coefficient analysis. 
+
+# References
+
+::: {#refs}
+:::

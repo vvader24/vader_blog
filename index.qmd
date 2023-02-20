@@ -1,0 +1,22 @@
+---
+title: "Vinita Vader"
+image: images/picture_vader.jpeg
+about:
+  template: jolla
+  image-width: 20em
+  image-shape: round
+  links:
+    - icon: twitter
+      text: Twitter
+      href: https://twitter.com/v_vader_
+    - icon: github
+      text: GitHub
+      href: https://github.com/vvader24
+    - icon: envelope
+      text: Email me
+      href: mailto:vvader@uoregon.edu
+---
+
+
+
+I am curious about how people think, feel and act across cultures. I explore Machine learning to understand psychological patterns that emerge across cultural landscapes. I can spend hours listening to Indian classical music. I can hum a tune or two in my spare time.

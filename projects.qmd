@@ -1,0 +1,54 @@
+---
+title: "Projects"
+---
+
+
+## Bookdown project
+
+:::: columns
+
+::: {.column width="55%"}
+In this project I use unsupervised machine learning models like Cluster analysis, Network analysis, and Principal Component analysis (PCA) to explore how we could build more culturally meaningful groups. I use data from *World Value survey* focusing on patterns in preferences for gender roles, attitude towards political institutions and endorsement for capitalist values to name a few variables . The goal was to explore how these methods could provide insights into the use of this data for building psychologically coherent groups. [Continue reading](https://vader-capstonebook.netlify.app/)
+:::
+
+::: {.column width="5%"}
+:::
+
+::: {.column width="40%"}
+![](images/diversity.jpeg)
+:::
+
+::::
+
+## Shiny Flex Dashboard - World Value Survey
+:::: columns
+
+::: {.column width="40%"}
+In this project I explore ways to describe the *World Value survey* data. The project involved creating a flex dashboard in R. [Continue reading](https://vvader24.github.io/EDLD2_FinalProject/#country-stats)
+:::
+
+::: {.column width="5%"}
+:::
+
+::: {.column width="55%"}
+![](images/wvs.jpeg)
+:::
+
+::::
+
+
+## Functional programming
+:::: columns
+
+::: {.column width="40%"}
+In this project is a tutorial, built using the Distill Website template for functional programming with R. Functions are built for ipsatization of raw data which is a common data type used in personality studies. Raw data is manipulated to minimize any within participant variation by rowwise mean centering or rowwsise scaling methods. The tutorial outlines the importance of this technique and step wise instructions for building functions using `purrr` and `tidyverse` packages.[Continue reading](https://vvader24.github.io/EDLD2_FinalProject/#country-stats)
+::::
+
+::: {.column width="5%"}
+:::
+
+::: {.column width="55%"}
+![](images/ips.jpeg)
+:::
+
+::::

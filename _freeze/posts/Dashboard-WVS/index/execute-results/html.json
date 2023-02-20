@@ -1,0 +1,14 @@
+{
+  "hash": "87e7669da480bd8a2df62bce1b4c9aad",
+  "result": {
+    "markdown": "---\ntitle: \"Dashboard using WVS data\"\nauthor: \"Vinita Vader\"\ndate: \"2021-08-26\"\ncategories: [dashboard, WVS, map, descriptive]\nimage: wvs.jpeg\n---\n\n\n\n\nIn this [project](https://vvader24.github.io/EDLD2_FinalProject/#country-stats) I explore ways to describe the *World Value survey* data. The project involved creating a flex dashboard in R.\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}
