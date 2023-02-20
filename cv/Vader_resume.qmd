@@ -26,13 +26,13 @@ cv <- googlesheets4::read_sheet(cv_url)
 
 ::: columns
 ::: {.column .aside width="80%"}
-<center><a href='https://beamilz.com' target='_blank'> ![](images/picture_vader.jpeg){width="80%" style="border-radius: 50%;"}</center>
+<center><a href='https://vvader.netlify.app' target='_blank'> ![](images/picture_vader.jpeg){width="80%" style="border-radius: 50%;"}</center>
 
 </a>
 
 ### Contact
 
-<center><span style="font-size: 1.5em;"> <a href='https://beamilz.com' target='_blank'><i class="fa fa-home"></i></a> <a href='https://github.com/vvader24' target='_blank'><i class="fa-brands fa-github"></i></a> <a href='mailto:vvader@uoregon.edu'><i class="fa fa-envelope"></i></a> <a href='https://twitter.com/v_vader_' target='_blank'><i class="fa-brands fa-twitter"></i></a></center>
+<center><span style="font-size: 1.5em;"> <a href='https://vvader.netlify.app' target='_blank'><i class="fa fa-home"></i></a> <a href='https://github.com/vvader24' target='_blank'><i class="fa-brands fa-github"></i></a> <a href='mailto:vvader@uoregon.edu'><i class="fa fa-envelope"></i></a> <a href='https://twitter.com/v_vader_' target='_blank'><i class="fa-brands fa-twitter"></i></a></center>
 
 </span>
 
@@ -142,7 +142,7 @@ create_section(cv, "clinical_ex")
 
 <p class="footer">
 
-Resume made with 💜 and [Quarto](https://quarto.org/). Last updated on `r format.Date(Sys.Date(), "%b %d, %Y")`. <br> Code available on <i class="fa-brands fa-github"></i> [GitHub](https://github.com/beatrizmilz/resume/blob/master/docs/index.qmd). <br>License: [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0/).
+Resume made with 💜 and [Quarto](https://quarto.org/). Last updated on `r format.Date(Sys.Date(), "%b %d, %Y")`. <br> Code available on <i class="fa-brands fa-github"></i> [GitHub](https://github.com/vvader24/vader_blog/blob/main/cv/Vader_resume.qmd). <br>License: [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0/).
 
 </p>
 
