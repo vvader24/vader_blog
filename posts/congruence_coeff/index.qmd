@@ -376,16 +376,22 @@ overflow-y: scroll;
 
 #### Phillippines: PCA solutions
 ```{r}
-#| class: output
 PH_loadings <- map(2:25, run_pca, data_pca = PH_data , country_code = "PH")
+```
+
+```{r}
+#| class: output
 PH_loadings
 ```
 
 #### Germany: PCA solutions
 ```{r}
-#| class: output
 DE_loadings <- map(2:25, run_pca, data_pca = DE_data, country_code = "DE" )
-DE_loadings 
+```
+
+```{r}
+#| class: output
+DE_loadings
 ```
 
 ## Congruence coefficient matrices
@@ -408,12 +414,15 @@ The problem can be stated as, given an $N_f$x$N_m$ cost matrix $C$, what is the 
 In the case of the loading matrices, we want to obtain values that maximize the cost in $\Sigma_mC_{i,j}$ as we want values that represent the highest similarity between the solutions from Philippines and Germany. The `HungarianSolver` function from the `RcppHungarian` package in R solves the _Minimum cost bipartite matching problem_ using the Hungarian algorithm and can be modified to also solve the _Maximum cost bipartite matching problem_. It provides pairings of variables from the congruence coefficient matrics 
 
 ```{r}
-#| class: output
-
 #get the optimum pairings using the Hungarian algorithm (aka the Huhn-Munkres algorithm). 
 pairings <- map(congruence_mats, ~RcppHungarian::HungarianSolver(-1*(abs(.x)))$pairs)
+```
+
+```{r}
+#| class: output
 pairings
 ```
+
 
 The next set of functions involve data wrangling of the `pairings` output to obtain the final average values for each of the candidate model solutions.
 
@@ -432,20 +441,27 @@ First, we build an `id` column that holds information about both the samples.
 ```
 
 ```{r}
-#| class: output
 #1. Pairs
  #All pairings with the required identifiers - id col that specifies the pairings for PH and DE, col names renamed 
 pairings_wID <- map(pairings, add_id_pairs)
+```
+
+```{r}
+#| class: output
 pairings_wID
 ```
 
 Next, we can obtain the values for each other corresponding pairs identified in the previous step. In order to do this, the `melt` function from `reshape2` package aids in obtaining the long format of the matrices. 
 ```{r}
-#| class: output
  #All congruence coefficient matrices are melted where every row consists of a unique pair
 matLongs <- map(congruence_mats, ~reshape2::melt(.x, na.rm=TRUE, value.name="cc"))
+```
+
+```{r}
+#| class: output
 matLongs
 ```
+
 
 The function below creates id's for all the variables in the matrices that can be matched with the pairs obtained by the Hungarian algorithm. 
 ```{r}
@@ -464,17 +480,23 @@ retain_rows
 ```
 
 ```{r}
-#| class: output
 #2. Congruence coefficient matrices
  #Add the id col by retaining the congruence coefficient values for each row and col name in the congruence coefficient matrix. 
 matLongs_wID<- map(matLongs, add_id_matLong)
+```
+
+```{r}
+#| class: output
 matLongs_wID
 ```
 
 Finally, we can join the two lists (pairings and desired cc values) using their id cols to retain only those pair values that result in an optimally high congruence coefficient as a combination of all rows*cols.  The obtained congruence coefficients maximize the overall average coefficient value for all combinations in each of the matrices. The `semi_join` function is the most efficient choice at the moment for this stage of the analysis. 
 ```{r}
-#| class: output
 final_cc_list <- map2(matLongs_wID, pairings_wID, semi_join, by = "id")
+```
+
+```{r}
+#| class: output
 final_cc_list
 ```
 
