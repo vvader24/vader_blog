@@ -1,12 +1,12 @@
 ---
 title: ""
 format: 
-  html:
+ html:
     theme: journal
     css: custom.css
 editor: visual
 knitr:
-  opts_chunk: 
+  opts_chunk:
     echo: false
     message: false
     warning: false
@@ -24,9 +24,9 @@ cv <- googlesheets4::read_sheet(cv_url)
 
 <!-- Sidebar -->
 
-::: columns
-::: {.column .aside width="80%"}
-<center><a href='https://vvader.netlify.app' target='_blank'> ![](images/picture_vader.jpeg){width="80%" style="border-radius: 50%;"}</center>
+::: grid
+::: g-col-3
+<center><a href='https://vvader.netlify.app' target='_blank'> ![](images/picture_vader.jpeg){width="50%" style="border-radius:60%;"}</center>
 
 </a>
 
@@ -38,19 +38,33 @@ cv <- googlesheets4::read_sheet(cv_url)
 
 Hi! I'm a graduate student in the Department of Psychology, University of Oregon.
 
-### Languages
-
-**Marathi:** Native <br> **English:** Proficient <br> **Hindi:** Proficient
+### Statistical modeling skills 
+Principal component analysis, Factor analysis, Clustering, Generalized linear models, Regularized regression, Decision trees/random forests
 
 ### Programming skills
+<i class="fab fa-r-project"></i> `R` 
+<br> <i class="fa fa-area-chart" aria-hidden="true"></i> `tidyverse` 
+<br> <i class="fab fa-markdown"></i> `RMarkdown/Quarto` 
+<br> <i class="fas fa-code-branch"></i> `Git/Gitkraken` 
+<br> <i class="fab fa-github"></i> `GitHub` <br> <i class="fab fa-markdown"></i> `Markdown` 
+<br> <i class="fab fa-html5"></i> `HTML` <br> <i class="fab fa-css3-alt"></i> `CSS` <br><i class="fa-brands fa-microsoft"></i> `Microsoft Office`
+<br><i class="fa-solid fa-chart-line"></i>`SPSS`
+<br>
 
-<i class="fab fa-r-project"></i> `R` <br> <i class="fa fa-area-chart" aria-hidden="true"></i> `tidyverse` <br> <i class="fab fa-markdown"></i> `RMarkdown / Quarto` <br> <i class="fas fa-code-branch"></i> `Git` <br> <i class="fab fa-github"></i> `GitHub` <br> <i class="fab fa-markdown"></i> `Markdown` <br> <i class="fab fa-html5"></i> `HTML` <br> <i class="fab fa-css3-alt"></i> `CSS` <br>
+### Recognition
+Sundberg Fellowship for Cross-cultural research (2020, 2021).<br>
+Reviewer for [Personality and Social Psychology Review Journal](https://us.sagepub.com/en-us/nam/journal/personality-and-social-psychology-review#editorial-board)
+
+### Languages
+**Marathi:** Native <br> **English:** Proficient <br> **Hindi:** Proficient
+
+
 :::
 
-::: {.column width="5%"}
+::: g-col-1
 :::
 
-::: {.column width="70%"}
+::: g-col-8
 <!-- Functions -->
 
 ```{r}
@@ -124,7 +138,7 @@ create_section(cv, "poster")
 create_section(cv, "publication")
 ```
 
-## <i class="fa-solid fa-person-chalkboard"></i> Selected teaching experience
+## <i class="fa-sharp fa-solid fa-chalkboard"></i> Selected teaching experience
 
 ```{r}
 create_section(cv, "teaching")
