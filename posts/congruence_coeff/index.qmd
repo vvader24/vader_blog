@@ -1,5 +1,5 @@
 ---
-title: "Comparisons across data types for High dimensionality models using Congruence coefficients"
+title: "Comparisons Across Data-types for High Dimensional Factor Analytic Models using Congruence Coefficient Analysis (CCA)"
 author: "Vinita Vader"
 date: "2023-02-19"
 categories: [Rcpp, code, tutorial, CCA]
@@ -27,7 +27,9 @@ A high dimensionality approach addresses these concerns by extracting a higher n
 
 Congruence coefficient is an index of factor similarity across solutions. Let us take an example using the Big 5 measure of personality (Extraversion, Conscientiousness, Neuroticsim, Agreeableness and Openness (Intellect)). wherein you have data on this measure from USA ( *sample 1* ) and China( *sample 2* ). You obtain a five-factor solution across these samples. A researcher might be interested in knowing how well do these factor solutions match. In other words, the researcher is interested in the extent to which the five factor solution obtained from the USA sample is similar to that obtained from the Chinese sample.
 
-{Write about why investigating factor similarity is important- WEIRD bias, cultural similarities and specificities, inhibiting researchers from making biased assumptions about homogeneity across populations.}
+Investigating factor similarity is important crucial to addressing the WEIRD bias problem in most psychological research. Most research in psychological scientific research is led by and studies people from WEIRD (Western, Educated, Industrialized and Democratic) populations. Before entirely committing to a model/structure of personality or values, it is vital to consider if the model stands in face of cultural discrepancies. Evaluating factor similarity can be seen as a form of testing cross-cultural (dis)similarity in datasets. 
+
+cultural similarities and specificities, inhibiting researchers from making biased assumptions about homogeneity across populations.
 
 If we consider $x_i$ as the factor loading of an item (for e.g., "I am a worrier")$i$ on factor $x$ (for e.g., "Neuroticism") in *sample 1* (for e.g., USA sample) and $y_i$ as the factor loading of an item (for e.g., "I am a worrier") $i$ on factor $y$ in *sample 2* (for e.g., Chinese sample), the congruence coefficient between these two factors can be computed using the following formula.
 
