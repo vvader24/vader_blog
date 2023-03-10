@@ -18,5 +18,4 @@ about:
       href: mailto:vvader@uoregon.edu
 ---
 
-I am curious about how people think, feel and act across cultures. I explore Machine learning to understand psychological patterns that emerge across cultural landscapes. I can spend hours listening to Indian classical music. I can hum a tune or two in my spare time.
-
+Hi! I am a PhD student in Personality Psychology. I use AI/ML to model cultural differences using personality and values as latent variables. I build culturally sensitive models that avoid researcher biases, in order to understand universal vs. culture-specific ways in which people think, feel and act.I am curious about psychological patterns that emerge across cultural landscapes.
