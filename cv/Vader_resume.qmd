@@ -3,6 +3,7 @@ title: ""
 format: 
  html:
     theme: journal
+    self-contained: true
     css: custom.css
 editor: visual
 knitr:
@@ -38,27 +39,21 @@ cv <- googlesheets4::read_sheet(cv_url)
 
 Hi! I'm a graduate student in the Department of Psychology, University of Oregon.
 
-### Statistical modeling skills 
+### Statistical modeling skills
+
 Principal component analysis, Factor analysis, Clustering, Generalized linear models, Regularized regression, Decision trees/random forests, Text analysis (Meaning Extraction method, Latent Dirichlet Allocation)
 
 ### Programming skills
-<i class="fab fa-r-project"></i> `R` 
-<br> <i class="fa fa-area-chart" aria-hidden="true"></i> `tidyverse` 
-<br> <i class="fab fa-markdown"></i> `RMarkdown/Quarto` 
-<br> <i class="fas fa-code-branch"></i> `Git/Gitkraken` 
-<br> <i class="fab fa-github"></i> `GitHub` <br> <i class="fab fa-markdown"></i> `Markdown` 
-<br> <i class="fab fa-html5"></i> `HTML` <br> <i class="fab fa-css3-alt"></i> `CSS` <br><i class="fa-brands fa-microsoft"></i> `Microsoft Office`
-<br><i class="fa-solid fa-chart-line"></i>`SPSS`
-<br>
+
+<i class="fab fa-r-project"></i> `R` <br> <i class="fa fa-area-chart" aria-hidden="true"></i> `tidyverse` <br> <i class="fab fa-markdown"></i> `RMarkdown/Quarto` <br> <i class="fas fa-code-branch"></i> `Git/Gitkraken` <br> <i class="fab fa-github"></i> `GitHub` <br> <i class="fab fa-markdown"></i> `Markdown` <br> <i class="fab fa-html5"></i> `HTML` <br> <i class="fab fa-css3-alt"></i> `CSS` <br><i class="fa-brands fa-microsoft"></i> `Microsoft Office` <br><i class="fa-solid fa-chart-line"></i>`SPSS` <br>
 
 ### Recognition
-Sundberg Fellowship for Cross-cultural research (2020, 2021).<br>
-Reviewer for [Personality and Social Psychology Review Journal](https://us.sagepub.com/en-us/nam/journal/personality-and-social-psychology-review#editorial-board)
+
+Sundberg Fellowship for Cross-cultural research (2020, 2021).<br> Reviewer for [Personality and Social Psychology Review Journal](https://us.sagepub.com/en-us/nam/journal/personality-and-social-psychology-review#editorial-board)
 
 ### Languages
+
 **Marathi:** Native <br> **English:** Proficient <br> **Hindi:** Proficient
-
-
 :::
 
 ::: g-col-1

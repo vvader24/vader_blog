@@ -6,6 +6,15 @@
     --bs-primary: #99867F;
 }
 
+.navbar {
+  background-color: var(--bs-blue) !important;
+}
+
+.header {
+  background-color: var(--bs-blue) !important;
+}
+
+
 h1, h2, h3 {
   font-family: "Montserrat";
   color:  var(--bs-blue);

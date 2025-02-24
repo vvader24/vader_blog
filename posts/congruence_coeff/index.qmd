@@ -27,7 +27,7 @@ A high dimensionality approach addresses these concerns by extracting a higher n
 
 Congruence coefficient is an index of factor similarity across solutions. Let us take an example using the Big 5 measure of personality (Extraversion, Conscientiousness, Neuroticsim, Agreeableness and Openness (Intellect)). wherein you have data on this measure from USA ( *sample 1* ) and China( *sample 2* ). You obtain a five-factor solution across these samples. A researcher might be interested in knowing how well do these factor solutions match. In other words, the researcher is interested in the extent to which the five factor solution obtained from the USA sample is similar to that obtained from the Chinese sample.
 
-Investigating factor similarity is important crucial to addressing the WEIRD bias problem in most psychological research. Most research in psychological scientific research is led by and studies people from WEIRD (Western, Educated, Industrialized and Democratic) populations. Before entirely committing to a model/structure of personality or values, it is vital to consider if the model stands in face of cultural discrepancies. Evaluating factor similarity can be seen as a form of testing cross-cultural (dis)similarity in datasets. 
+Investigating factor similarity is important crucial to addressing the WEIRD bias problem in most psychological research. Most research in psychological scientific research is led by and studies people from WEIRD (Western, Educated, Industrialized and Democratic) populations. Before entirely committing to a model/structure of personality or values, it is vital to consider if the model stands in face of cultural discrepancies. Evaluating factor similarity can be seen as a form of testing cross-cultural (dis)similarity in datasets.
 
 cultural similarities and specificities, inhibiting researchers from making biased assumptions about homogeneity across populations.
 
@@ -277,9 +277,6 @@ table_print("Openness to expereince")
 ```
 :::
 
-
-
-
 ## Final data {#finaldata}
 
 ```{r}
@@ -309,7 +306,6 @@ DE_data <- unclean_data %>%
   dplyr::select(-country)
 ```
 
-
 ::: panel-tabset
 ### Phillipines data
 
@@ -335,18 +331,19 @@ DE_data  %>%
 :::
 
 # Analysis
+
 ## Principal component analysis
 
-There are several decisions at this step that are important to consider in terms of process of deriving candidate models. Decisions about rotation type (for e.g., variamx, oblimin, equamax) and number of factors to be extracted are dependent on the type of data being used and the theoretical basis for the analysis. Typically, personality studies have focused on models that are varimax rotated models, mistakenly assuming that all factors in a personality scale should be independent of each other. A common assumption is also made about the number of factors being in the vicinity of the value five. Scree plots followed by parallel analysis have been utilized excessively in recent times for determining the optimum number of factors, given the data. 
+There are several decisions at this step that are important to consider in terms of process of deriving candidate models. Decisions about rotation type (for e.g., variamx, oblimin, equamax) and number of factors to be extracted are dependent on the type of data being used and the theoretical basis for the analysis. Typically, personality studies have focused on models that are varimax rotated models, mistakenly assuming that all factors in a personality scale should be independent of each other. A common assumption is also made about the number of factors being in the vicinity of the value five. Scree plots followed by parallel analysis have been utilized excessively in recent times for determining the optimum number of factors, given the data.
 
 However, the exponential growth in data handling capacities of computers, have opened up the opportunity to venture into the higher dimensional models. We can test models with higher number of factors and assess greater amounts of data to replicate these models across varying demographics. With that, we need more sophisticated solutions to the optimum model problem. Functional programming and working extensively with lists are important ways in which data can be handled.
 
 This analysis mainly focuses on comparing solutions across samples from different countries. However, one could also use congruence coefficients for comparing solutions across rotation types (for e.g., varimax vs. oblimin) or data-types based on handling of the data(for e.g., raw vs. ipsatized) or based on a demographic variable (for e.g., male vs. female).
 
-I describe the code in detail at every step and provide suggestions to other potential scenarios, specifically referring to personality studies. 
-
+I describe the code in detail at every step and provide suggestions to other potential scenarios, specifically referring to personality studies.
 
 ### List PCA solutions
+
 The `psych` package is a neat way of computing PCA in R. In high dimensionality studies one will often encounter scenarios wherein they want to compare multiple models with varying number of factors that are extracted. Make sure that the input data should consist only of `numeric` variables (See @finaldata). You can use the `dplyr::glimpse(data)` function to check if all the variables in the `tibble` or `dataframe` are `numeric`. I have built the function `run_pca` that takes country data as input and computes a varimax solution across different values of `nfactors` or number of factors extracted.
 
 ```{r pca}
@@ -367,8 +364,8 @@ pc_loadings
 }
 ```
 
+The following code computes models that extract factors ranging from 2 to 25 and saves the loading matrix for each candidate model solution. The `map` function provides a list of all the matrices as output.
 
-The following code computes models that extract factors ranging from 2 to 25 and saves the loading matrix for each candidate model solution. The `map` function provides a list of all the matrices as output. 
 ```{css, echo = FALSE}
 .output {
 max-height: 500px;
@@ -377,6 +374,7 @@ overflow-y: scroll;
 ```
 
 #### Phillippines: PCA solutions
+
 ```{r}
 PH_loadings <- map(2:25, run_pca, data_pca = PH_data , country_code = "PH")
 ```
@@ -387,6 +385,7 @@ PH_loadings
 ```
 
 #### Germany: PCA solutions
+
 ```{r}
 DE_loadings <- map(2:25, run_pca, data_pca = DE_data, country_code = "DE" )
 ```
@@ -397,7 +396,9 @@ DE_loadings
 ```
 
 ## Congruence coefficient matrices
-These lists serve as inputs for congruence coefficient analysis. The function `factor.congruence` from the `psych` package provides a matrix indicating the extent of similarity between factors of both the solutions. 
+
+These lists serve as inputs for congruence coefficient analysis. The function `factor.congruence` from the `psych` package provides a matrix indicating the extent of similarity between factors of both the solutions.
+
 ```{r}
 #| class: output
 
@@ -407,13 +408,14 @@ congruence_mats
 ```
 
 ## Maximum cost bipartite matching problem
-This is the most crucial step of this analysis. It involves identifying those unique non-overlapping values in each row and column that provide the highest average value for each matrix. This is the opposite of _Minimum cost bipartite matching problem_ (MCBM). Here is an example to illustrate the problem: 
 
-Assume that you run a matchmaking website and there are $N_f$ and $N_m$ who identify themselves as heterosexual. Each female is looking for a male partner and vice versa. You have a personality assessment of all participants enrolled on your website. Studies have demonstrated that partners differing on their levels of Extraversion could potentially lead to relationship dissatisfaction. A highly extraverted person may experience dissatisfaction with a introverted partner. In other words, there is some cost $C_{ij}$ for matching female _i_ with male _j_ on your website. The solution to this problem is finding a match for each participant with the least possible cost to any participant.  
+This is the most crucial step of this analysis. It involves identifying those unique non-overlapping values in each row and column that provide the highest average value for each matrix. This is the opposite of *Minimum cost bipartite matching problem* (MCBM). Here is an example to illustrate the problem:
 
-The problem can be stated as, given an $N_f$x$N_m$ cost matrix $C$, what is the optimal set of $m = min{N_f,N_m}$ matchings $(i,j)$, that minimizes the total cost of matchings $\Sigma_mC_{i,j}$. 
+Assume that you run a matchmaking website and there are $N_f$ and $N_m$ who identify themselves as heterosexual. Each female is looking for a male partner and vice versa. You have a personality assessment of all participants enrolled on your website. Studies have demonstrated that partners differing on their levels of Extraversion could potentially lead to relationship dissatisfaction. A highly extraverted person may experience dissatisfaction with a introverted partner. In other words, there is some cost $C_{ij}$ for matching female *i* with male *j* on your website. The solution to this problem is finding a match for each participant with the least possible cost to any participant.
 
-In the case of the loading matrices, we want to obtain values that maximize the cost in $\Sigma_mC_{i,j}$ as we want values that represent the highest similarity between the solutions from Philippines and Germany. The `HungarianSolver` function from the `RcppHungarian` package in R solves the _Minimum cost bipartite matching problem_ using the Hungarian algorithm and can be modified to also solve the _Maximum cost bipartite matching problem_. It provides pairings of variables from the congruence coefficient matrics 
+The problem can be stated as, given an $N_f$x$N_m$ cost matrix $C$, what is the optimal set of $m = min{N_f,N_m}$ matchings $(i,j)$, that minimizes the total cost of matchings $\Sigma_mC_{i,j}$.
+
+In the case of the loading matrices, we want to obtain values that maximize the cost in $\Sigma_mC_{i,j}$ as we want values that represent the highest similarity between the solutions from Philippines and Germany. The `HungarianSolver` function from the `RcppHungarian` package in R solves the *Minimum cost bipartite matching problem* using the Hungarian algorithm and can be modified to also solve the *Maximum cost bipartite matching problem*. It provides pairings of variables from the congruence coefficient matrics
 
 ```{r}
 #get the optimum pairings using the Hungarian algorithm (aka the Huhn-Munkres algorithm). 
@@ -425,10 +427,10 @@ pairings <- map(congruence_mats, ~RcppHungarian::HungarianSolver(-1*(abs(.x)))$p
 pairings
 ```
 
-
 The next set of functions involve data wrangling of the `pairings` output to obtain the final average values for each of the candidate model solutions.
 
-First, we build an `id` column that holds information about both the samples. 
+First, we build an `id` column that holds information about both the samples.
+
 ```{r}
 #1. Pairs
  #Adds id columns to the 'pairs'; it strings together/concatenates the values from set x (PH) and set y (DE) to build an id col. 
@@ -453,7 +455,8 @@ pairings_wID <- map(pairings, add_id_pairs)
 pairings_wID
 ```
 
-Next, we can obtain the values for each other corresponding pairs identified in the previous step. In order to do this, the `melt` function from `reshape2` package aids in obtaining the long format of the matrices. 
+Next, we can obtain the values for each other corresponding pairs identified in the previous step. In order to do this, the `melt` function from `reshape2` package aids in obtaining the long format of the matrices.
+
 ```{r}
  #All congruence coefficient matrices are melted where every row consists of a unique pair
 matLongs <- map(congruence_mats, ~reshape2::melt(.x, na.rm=TRUE, value.name="cc"))
@@ -464,8 +467,8 @@ matLongs <- map(congruence_mats, ~reshape2::melt(.x, na.rm=TRUE, value.name="cc"
 matLongs
 ```
 
+The function below creates id's for all the variables in the matrices that can be matched with the pairs obtained by the Hungarian algorithm.
 
-The function below creates id's for all the variables in the matrices that can be matched with the pairs obtained by the Hungarian algorithm. 
 ```{r}
 #2. Congruence coefficient matrices
  #Adds id columns to the 'pairs'; it strings together the values from set x (PH) and set y (DE) to build an id col. 
@@ -492,7 +495,8 @@ matLongs_wID<- map(matLongs, add_id_matLong)
 matLongs_wID
 ```
 
-Finally, we can join the two lists (pairings and desired cc values) using their id cols to retain only those pair values that result in an optimally high congruence coefficient as a combination of all rows*cols.  The obtained congruence coefficients maximize the overall average coefficient value for all combinations in each of the matrices. The `semi_join` function is the most efficient choice at the moment for this stage of the analysis. 
+Finally, we can join the two lists (pairings and desired cc values) using their id cols to retain only those pair values that result in an optimally high congruence coefficient as a combination of all rows\*cols. The obtained congruence coefficients maximize the overall average coefficient value for all combinations in each of the matrices. The `semi_join` function is the most efficient choice at the moment for this stage of the analysis.
+
 ```{r}
 final_cc_list <- map2(matLongs_wID, pairings_wID, semi_join, by = "id")
 ```
@@ -503,7 +507,8 @@ final_cc_list
 ```
 
 ## Average congruence coefficient
-The final step here is to compute the average congruence coefficient value for all the solutions. 
+
+The final step here is to compute the average congruence coefficient value for all the solutions.
 
 ```{r}
 #| warning: false
@@ -526,7 +531,7 @@ all_avg.cc_r <- map(final_cc_list,compute_avg.cc) %>%
                mutate(Average_cc = round(Average_cc,3))
 ```
 
-This table neatly displays all the candidate models with their respective Average Congruence coefficient values. 
+This table neatly displays all the candidate models with their respective Average Congruence coefficient values.
 
 ```{r}
 all_avg.cc_r %>% 
@@ -535,8 +540,7 @@ all_avg.cc_r %>%
  scroll_box(width = "500px", height = "600px")
 ```
 
-Visualizing the data above aids in identifying the most robust model(s).The most efficient way of doing this is the line graph. 
-## Visualization
+Visualizing the data above aids in identifying the most robust model(s).The most efficient way of doing this is the line graph. \## Visualization
 
 ```{r avgCC-plot}
 all_avg.cc_r %>% 
@@ -547,14 +551,16 @@ all_avg.cc_r %>%
        y = "Average Congruence Coefficient values")+
   theme_minimal()
 ```
-The line plot above indicates that the 6-factor varimax rotated model performs the best across the Phillipino and German samples. It is followed by the 15-, 11- and 12- factor solutions. Based on Congruence coefficient analysis, one can conclude that the 6-factor structure is in line with the theoretical basis of the HEXCAO model of personality. 
+
+The line plot above indicates that the 6-factor varimax rotated model performs the best across the Phillipino and German samples. It is followed by the 15-, 11- and 12- factor solutions. Based on Congruence coefficient analysis, one can conclude that the 6-factor structure is in line with the theoretical basis of the HEXCAO model of personality.
 
 # Applying CCA to actual data
-It is critical that any user of this approach place the above results in context and understand the implications when applying Congruence coefficient analysis (CCA) to similar datasets. 
 
-The results above are based on a previously developed scale that has been replicated across contexts. The items in the measure have been refined and retained to corroborate the 6-factor structure. This is a common part of assessment development in Personality studies. It is therefore, not surprising to obtain these results further validating the 6-factor structure of the HEXACO model of personality. 
+It is critical that any user of this approach place the above results in context and understand the implications when applying Congruence coefficient analysis (CCA) to similar datasets.
 
-Below, we take a look at the amount of variance explained by each of the candidate models considered in this project. 
+The results above are based on a previously developed scale that has been replicated across contexts. The items in the measure have been refined and retained to corroborate the 6-factor structure. This is a common part of assessment development in Personality studies. It is therefore, not surprising to obtain these results further validating the 6-factor structure of the HEXACO model of personality.
+
+Below, we take a look at the amount of variance explained by each of the candidate models considered in this project.
 
 ```{r}
 #| code-fold: true
@@ -616,10 +622,11 @@ all_indices_table%>%
         legend.background = element_rect(fill = "grey94"))
 ```
 
-The 6-factor solution manages to capture only about one-third of the variation in the data. It is necessary to consider higher dimensional structures that enable the discovery of complex psychological patterns in the samples under study. There could be potential for unearthing more culture specific aspects of individual differences in datasets that capture individual differences in personality, attitudes, preferences or values. The low amount of variance explained by low dimensional models is indicative of information in the data that is left out. 
+The 6-factor solution manages to capture only about one-third of the variation in the data. It is necessary to consider higher dimensional structures that enable the discovery of complex psychological patterns in the samples under study. There could be potential for unearthing more culture specific aspects of individual differences in datasets that capture individual differences in personality, attitudes, preferences or values. The low amount of variance explained by low dimensional models is indicative of information in the data that is left out.
 
 # Conclusion
-In order to assess robustness of a model derived from Principal component analysis, it is necessary to consider the similarity between structures across different conditions as one of the indices. This can be done using Congruence coefficient analysis. 
+
+In order to assess robustness of a model derived from Principal component analysis, it is necessary to consider the similarity between structures across different conditions as one of the indices. This can be done using Congruence coefficient analysis.
 
 # References
 
