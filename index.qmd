@@ -15,7 +15,7 @@ about:
       href: https://github.com/vvader24
     - icon: envelope
       text: Email me
-      href: mailto:vvader@uoregon.edu
+      href: mailto:vvader.professional@gmail.com
 ---
 
-Hi! I am a PhD student in Personality Psychology. I use AI/ML to model cultural differences using personality and values as latent variables. I build culturally sensitive models that avoid researcher biases, in order to understand universal vs. culture-specific ways in which people think, feel and act.I am curious about psychological patterns that emerge across cultural landscapes.
+Hello! I'm a Behavioral Scientist with a PhD in Personality Psychology specializing in leveraging AI and machine learning to uncover psychological patterns and cultural nuances in human behavior. I develop culturally sensitive models that minimize bias, enabling me to discern both universal and culture-specific dynamics in how people think, feel, and act. By integrating user-centered research with advanced analytical techniques, I transform these insights into actionable business strategies that drive effective outcomes.
